@@ -21,32 +21,13 @@ var = IntVar()
 resultats_string = StringVar()
 resultats_string.set("Résultats")
 
-for i in range(9):  # on nbr colonnes = 6 , et nbr lignes = 9
+for i in range(12):  # on nbr colonnes = 6 , et nbr lignes = 12
     if i < 6:
         Grid.columnconfigure(racine, i, weight=1)
         Grid.rowconfigure(racine, i, weight=1)
     else:
         Grid.rowconfigure(racine, i, weight=1)
 
-
-# def reinitialiser_interface():
-#     # Réinitialisez les valeurs
-#     d.delete(0, END)
-#     t.delete(0, END)
-#     vi.delete(0, END)
-#     vf.delete(0, END)
-#     a.delete(0, END)
-#
-#     # Réinitialisez la taille des boutons
-#     bouton_effacer.config(width=15)
-#     d_bouton.config(width=15)
-#     t_bouton.config(width=15)
-#     vi_bouton.config(width=15)
-#     vf_bouton.config(width=15)
-#     a_bouton.config(width=15)
-#
-#     # Supprimez le graphique
-#     graph_canvas.delete("all")
 
 def dark_mode():
     if var.get() == 1:
@@ -80,16 +61,11 @@ def dark_mode():
 
         mode_sombre.config(bg='black', fg='white')
 
+        scale.config(bg="black", fg="white")
+
         
     else:
         # Light mode
-        # racine.config(bg='white')
-        # label.config(bg='white', fg='black')
-        # canvas.config(bg='white', highlightbackground='black', highlightcolor='black', highlightthickness=1)
-        # entry_velocity.config(bg='white', fg='black')
-        # entry_time.config(bg='white', fg='black')
-        # entry_acceleration.config(bg='white', fg='black')
-        # button_calculate.config(bg='lightgrey', fg='black')
         racine.config(bg='lightgray')
         label1.config(bg='lightgray', fg='black')
         label2.config(bg='lightgray', fg='black')
@@ -118,6 +94,7 @@ def dark_mode():
         export_button.config(bg='lightgray', fg='black')
         plot_button.config(bg='lightgray', fg='black')
         mode_sombre.config(bg='lightgray', fg='black')
+        scale.config(bg='lightgray', fg='black')
 
 def effacer_valeurs():  # fonction pour vider les champs deja remplis
     # reinitialiser_interface()
@@ -135,7 +112,6 @@ def effacer_valeurs():  # fonction pour vider les champs deja remplis
 #fonction pour dessiner un graphique
 def plot_trajectory():
     global graph_canvas
-    # effacer_valeurs()
 
     var_connues = obtenir_var_connues()
     if 't' in var_connues and 'vi' in var_connues and 'a' in var_connues:
@@ -226,57 +202,7 @@ def calc_d():  # fonction pour calculer la distance d
         d2 = (vi2 + vf2) * t2 / 2
         work = f'vi = vf - a*t\nvi = {vi2} m/s\nd = (vi + vf)/2 * t '
     resultats_string.set(f'{work}\n distance: {round(d2, 2)} m')
-
-def txt_d():  # fonction pour calculer la distance d
-    global resultats_string
-    var_connues = obtenir_var_connues()
-    if 'd' in var_connues:
-        d2 = var_connues['d']
-        work = 'd = d...'
-        formule = 5
-    elif len(var_connues) < 3:
-        formule = 0
-        work = "Besoin d'au moins 3 valeurs connues pour résoudre ! Problème non résolu !"
-        d2 = 0.0
-    elif 'vi' in var_connues:
-        if 'a' in var_connues:
-            if 't' in var_connues:
-                formule = 1
-            elif 'vf' in var_connues:
-                formule = 2
-        elif 'vf' in var_connues and 't' in var_connues:
-            formule = 3
-    elif 'vf' in var_connues and 'a' in var_connues and 't' in var_connues:
-        formule = 4
-    else:
-        print("Que se passe-t-il ?")
-    if formule == 1:
-        t2 = var_connues['t']
-        vi2 = var_connues['vi']
-        a2 = var_connues['a']
-        d2 = vi2 * t2 + (0.5 * a2 * t2 ** 2)
-        work = 'd = vi*t + 1/2*a*t^2'
-    elif formule == 2:
-        a2 = var_connues['a']
-        vi2 = var_connues['vi']
-        vf2 = var_connues['vf']
-        d2 = (vf2 ** 2 - vi2 ** 2) / (2 * a2)
-        work = 'd = (vf^2-vi^2)/2a'
-    elif formule == 3:
-        vf2 = var_connues['vf']
-        vi2 = var_connues['vi']
-        t2 = var_connues['t']
-        d2 = (vi2 + vf2) * t2 / 2
-        work = 'd = (vi + vf)/2 * t'
-    elif formule == 4:
-        vf2 = var_connues['vf']
-        a2 = var_connues['a']
-        t2 = var_connues['t']
-        vi2 = vf2 - a2 * t2
-        d2 = (vi2 + vf2) * t2 / 2
-        work = f'vi = vf - a*t\nvi = {vi2} m/s\nd = (vi + vf)/2 * t '
-    return round(d2,2)
-
+    return round(d2,2) 
 
 def calc_t():  # fonction pour calculer le temps t
     global resultats_string
@@ -334,63 +260,6 @@ def calc_t():  # fonction pour calculer le temps t
         t2 = (2 * d2) / (vi2 - vf2)
         work = f'vi = sqrt(vf^2 - 2*a*d)\nvi = {vi2} m/s\nt = 2d/(vi-vf) '
     resultats_string.set(f'{work}\n temps: {round(t2, 2)} s')
-
-
-def txt_t():  # fonction pour calculer le temps t
-    global resultats_string
-    var_connues = obtenir_var_connues()
-    if 't' in var_connues:
-        t2 = var_connues['t']
-        work = 't = t...'
-        formule = 5
-    elif len(var_connues) < 3:
-        formule = 0
-        work = "Besoin d'au moins 3 valeurs connues pour résoudre ! Problème non résolu !"
-        t2 = 0.0
-    elif 'vi' in var_connues:
-        if 'a' in var_connues:
-            if 'd' in var_connues:
-                formule = 1
-            elif 'vf' in var_connues:
-                formule = 2
-        elif 'vf' in var_connues and 'd' in var_connues:
-            formule = 3
-    elif 'vf' in var_connues and 'd' in var_connues and 'a' in var_connues:
-        formule = 4
-    else:
-        print("Que se passe-t-il ?")
-    if formule == 1:
-        a2 = var_connues['a']
-        vi2 = var_connues['vi']
-        d2 = var_connues['d']
-        t_plus = (-vi2 + math.sqrt(vi2 ** 2 - 2 * a2 * (-d2))) / a2
-        t_minus = (-vi2 - math.sqrt(vi2 ** 2 - 2 * a2 * (-d2))) / a2
-        if t_plus >= 0:
-            t2 = t_plus
-        else:
-            t2 = t_minus
-        work = '1/2*a*t^2 + vi*t - d = 0\néquation quadratique : x = (-b +/- sqrt(b^2 - 4ac))/2a\n' \
-            't = valeur positive de (-vi +/- sqrt(vi^2 - 2ad))/a'
-
-    elif formule == 2:
-        a2 = var_connues['a']
-        vi2 = var_connues['vi']
-        vf2 = var_connues['vf']
-        t2 = (vf2 - vi2) / a2
-        work = 't = (vf-vi)/a'
-    elif formule == 3:
-        d2 = var_connues['d']
-        vi2 = var_connues['vi']
-        vf2 = var_connues['vf']
-        t2 = (2 * d2) / (vi2 - vf2)
-        work = 't = 2d/(vi-vf)'
-    elif formule == 4:
-        d2 = var_connues['d']
-        vf2 = var_connues['vf']
-        a2 = var_connues['a']
-        vi2 = math.sqrt(vf2 ** 2 - 2 * a2 * d2)
-        t2 = (2 * d2) / (vi2 - vf2)
-        work = f'vi = sqrt(vf^2 - 2*a*d)\nvi = {vi2} m/s\nt = 2d/(vi-vf) '
     return round(t2,2)
 
 
@@ -444,56 +313,6 @@ def calc_vi():  # fonction pour calculer la vitesse initiale
         vi2 = (d2 / t2) * 2 - vf2
         work = 'vi = 2*d/t - vf'
     resultats_string.set(f'{work}\n vitesse initiale: {round(vi2, 2)} m/s')
-
-
-def txt_vi():  # fonction pour calculer la vitesse initiale
-    global resultats_string
-    var_connues = obtenir_var_connues()
-    if 'vi' in var_connues:
-        vi2 = var_connues['vi']
-        work = 'vi = vi...'
-        formule = 5
-    elif len(var_connues) < 3:
-        formule = 0
-        work = "Besoin d'au moins 3 valeurs connues pour résoudre ! Problème non résolu !"
-        vi2 = 0.0
-    elif 'a' in var_connues:
-        if 'd' in var_connues:
-            if 't' in var_connues:
-                formule = 1
-            elif 'vf' in var_connues:
-                formule = 2
-        elif 't' in var_connues and 'vf' in var_connues:
-            formule = 3
-    elif 'vf' in var_connues and 'd' in var_connues and 't' in var_connues:
-        formule = 4
-    else:
-        print("Que se passe-t-il ?")
-    if formule == 1:
-        t2 = var_connues['t']
-        d2 = var_connues['d']
-        a2 = var_connues['a']
-        vi2 = (d2 - (0.5 * a2 * t2 ** 2)) / t2
-        work = 'vi = (d - (1/2*a*t^2))/t'
-    elif formule == 2:
-        d2 = var_connues['d']
-        vf2 = var_connues['vf']
-        a2 = var_connues['a']
-        vi2 = math.sqrt(vf2 ** 2 - 2 * a2 * d2)
-        work = 'vi = sqrt(vf^2 - 2*a*d)'
-    elif formule == 3:
-        a2 = var_connues['a']
-        vf2 = var_connues['vf']
-        t2 = var_connues['t']
-        vi2 = vf2 - (a2 * t2)
-        work = 'vi = vf - a*t'
-
-    elif formule == 4:
-        d2 = var_connues['d']
-        vf2 = var_connues['vf']
-        t2 = var_connues['t']
-        vi2 = (d2 / t2) * 2 - vf2
-        work = 'vi = 2*d/t - vf'
     return round(vi2,2)
 
 
@@ -546,55 +365,6 @@ def calc_vf():  # fonction pour calculer la vitesse finale
         vf2 = vi2 + a2 * t2
         work = f'vi = (d - (1/2*a*t^2))/t\nvi = {vi2} m/s\nvf = vi + a*t '
     resultats_string.set(f'{work}\n vitesse finale: {round(vf2, 2)} m/s')
-
-def txt_vf():  # fonction pour calculer la vitesse finale
-    global resultats_string
-    var_connues = obtenir_var_connues()
-    if 'vf' in var_connues:
-        vf2 = var_connues['vf']
-        work = 'vf = vf...'
-        formule = 5
-    elif len(var_connues) < 3:
-        formule = 0
-        work = "Besoin d'au moins 3 valeurs connues pour résoudre ! Problème non résolu !"
-        vf2 = 0.0
-    elif 'vi' in var_connues:
-        if 'a' in var_connues:
-            if 't' in var_connues:
-                formule = 1
-            elif 'd' in var_connues:
-                formule = 2
-        elif 't' in var_connues and 'd' in var_connues:
-            formule = 3
-    elif 'a' in var_connues and 'd' in var_connues and 't' in var_connues:
-        formule = 4
-    else:
-        print("Que se passe-t-il ?")
-    if formule == 1:
-        t2 = var_connues['t']
-        vi2 = var_connues['vi']
-        a2 = var_connues['a']
-        vf2 = vi2 + (a2 * t2)
-        work = 'vf = vi + (a*t)'
-    elif formule == 2:
-        d2 = var_connues['d']
-        vi2 = var_connues['vi']
-        a2 = var_connues['a']
-        vf2 = math.sqrt(vi2 ** 2 + 2 * a2 * d2)
-        work = 'vf = sqrt(vi^2 + 2*a*d)'
-    elif formule == 3:
-        d2 = var_connues['d']
-        vi2 = var_connues['vi']
-        t2 = var_connues['t']
-        vf2 = ((d2 / t2) * 2) - vi2
-        work = 'vf = 2d/t - vi'
-    elif formule == 4:
-        d2 = var_connues['d']
-        a2 = var_connues['a']
-        t2 = var_connues['t']
-        vi2 = (d2 - (0.5 * a2 * t2 ** 2)) / t2
-        vf2 = vi2 + a2 * t2
-        work = f'vi = (d - (1/2*a*t^2))/t\nvi = {vi2} m/s\nvf = vi + a*t '
     return round(vf2,2)
 
 
@@ -647,57 +417,8 @@ def calc_a():  # calculer l'acceleration
         a2 = (vf2 - vi2) / t2
         work = f'vi = 2d/t - vf\n vi = {vi2} m/s \n a = (vf-vi)/t '
     resultats_string.set(f'{work}\n acceleration: {round(a2, 2)} m/s^2')
-
-
-def txt_a():  # calculer l'acceleration
-    global resultats_string
-    var_connues = obtenir_var_connues()
-    if 'a' in var_connues:
-        a2 = var_connues['a']
-        work = 'a = a...'
-        formule = 5
-    elif len(var_connues) < 3:
-        formule = 0
-        work = "Besoin d'au moins 3 valeurs connues pour résoudre ! Problème non résolu !"
-        a2 = 0.0
-    elif 'vi' in var_connues:
-        if 't' in var_connues:
-            if 'vf' in var_connues:
-                formule = 1
-            elif 'd' in var_connues:
-                formule = 2
-        elif 'vf' in var_connues and 'd' in var_connues:
-            formule = 3
-    elif 'vf' in var_connues and 'd' in var_connues and 't' in var_connues:
-        formule = 4
-    else:
-        print("Que se passe-t-il ?")
-    if formule == 1:
-        t2 = var_connues['t']
-        vi2 = var_connues['vi']
-        vf2 = var_connues['vf']
-        a2 = (vi2 - vf2) / t2
-        work = ('a = (vi - vf) / t')
-    elif formule == 2:
-        d2 = var_connues['d']
-        vi2 = var_connues['vi']
-        t2 = var_connues['t']
-        a2 = 2 * (d2 - (vi2 * t2)) / (t2 ** 2)
-        work = 'a = 2*(d - (vi*t))/t^2'
-    elif formule == 3:
-        d2 = var_connues['d']
-        vi2 = var_connues['vi']
-        vf2 = var_connues['vf']
-        a2 = (vf2 ** 2 - vi2 ** 2) / 2 * d2
-        work = 'a = (vf^2 - vi^2)/2*d'
-    elif formule == 4:
-        d2 = var_connues['d']
-        vf2 = var_connues['vf']
-        t2 = var_connues['t']
-        vi2 = ((d2 / t2) * 2) - vf2
-        a2 = (vf2 - vi2) / t2
-        work = f'vi = 2d/t - vf\n vi = {vi2} m/s \n a = (vf-vi)/t '
     return round(a2,2)
+
 
 
 def export_to_txt(): #exporter les donnees de la trajectoire dans un fichier txt
@@ -712,11 +433,11 @@ def export_to_txt(): #exporter les donnees de la trajectoire dans un fichier txt
                 file.write(f"{key}: {value}\n")
 
             file.write("\nRésultats:\n")
-            file.write(f"Distance (d): {str(txt_d())}\n")
-            file.write(f"Temps (t): {str(txt_t())}\n")
+            file.write(f"Distance (d): {str(calc_d())}\n")
+            file.write(f"Temps (t): {str(calc_t())}\n")
             file.write(f"Vitesse initiale (vi): {str(vi.get())}\n")
-            file.write(f"Vitesse finale (vf): {str(txt_vf())}\n")
-            file.write(f"Accélération (a): {str(txt_a())}\n")
+            file.write(f"Vitesse finale (vf): {str(calc_vf())}\n")
+            file.write(f"Accélération (a): {str(calc_a())}\n")
 
         print(f"Données exportées avec succès vers {file_path}")
 
@@ -782,7 +503,7 @@ plot_button.grid(row=10, column=0, columnspan=6, padx=10, pady=10, sticky='NESW'
 
 export_button = Button(racine, text='Exporter vers TXT (il faut donner au moins 3 variables connues)', command=export_to_txt, font='bold')
 export_button.grid(row=9, column=0, columnspan=6, padx=10, pady=10, sticky='NESW')
-messagebox.showinfo("showinfo", "Welcome to the app of Abir the pricess")
+messagebox.showinfo("showinfo", "Bienvenue dans l'interface de Abir MOUSSAIF")
 mode_sombre = Checkbutton(racine, text="Sombre/Light mode",variable=var ,onvalue=1,offvalue=0,   command=dark_mode)
 mode_sombre.grid(row=11, column=0, columnspan=6, padx=10, pady=10, sticky='NESW')
 scale = Scale(racine, from_=0, to=100, orient=HORIZONTAL)

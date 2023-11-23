@@ -11,7 +11,6 @@ from tkinter import messagebox
  vf = vi + a*t
  vf^2 = vi^2 + 2 * a * d
  d = (vi + vf)/2 * t
-
 """
 
 racine = Tk()
@@ -41,7 +40,8 @@ def dark_mode():
         vf_label.config(bg='black', fg='white')
         a_label.config(bg='black', fg='white')
         t_label.config(bg='black', fg='white')
-        graph_canvas.config(bg='black', highlightbackground='white', highlightcolor='white', highlightthickness=1)
+        post_scale.config(bg='black', fg='white')
+        # graph_canvas.config(bg='black', highlightbackground='white', highlightcolor='white', highlightthickness=1)
 
         vi.config(bg='black', fg='white')
         vf.config(bg='black', fg='white')
@@ -75,8 +75,9 @@ def dark_mode():
         vf_label.config(bg='lightgray', fg='black')
         a_label.config(bg='lightgray', fg='black')
         t_label.config(bg='lightgray', fg='black')
+        post_scale.config(bg='lightgray', fg='black')
 
-        graph_canvas.config(bg='lightgray', highlightbackground='black', highlightcolor='white', highlightthickness=1)
+        # graph_canvas.config(bg='lightgray', highlightbackground='black', highlightcolor='white', highlightthickness=1)
 
         vi.config(bg='lightgray', fg='black')
         vf.config(bg='lightgray', fg='black')
@@ -120,10 +121,14 @@ def plot_trajectory():
         a = var_connues['a']
         d_values = vi * t_values + 0.5 * a * t_values**2
 
-        # Création du graphique avec tkinter
-        graph_canvas = Canvas(racine, width=400, height=300)
-        graph_canvas.grid(row=10, column=0, columnspan=6, padx=10, pady=10, sticky='NESW')
+        #Creation de la fenetre Toplevel
+        top_window = Toplevel(racine)
+        top_window.title("Trajectoire")
 
+        #Creation de canvas pour le graphique dans la fenetre Toplevel
+
+        graph_canvas = Canvas(top_window, width=400, height=300)
+        graph_canvas.pack()
         # Dessiner la trajectoire sur le graphique
         for i in range(len(t_values) - 1):
             x1, y1 = (t_values[i] / var_connues['t']) * 400, 300 - (d_values[i] / max(d_values)) * 300
@@ -506,11 +511,13 @@ export_button.grid(row=9, column=0, columnspan=6, padx=10, pady=10, sticky='NESW
 messagebox.showinfo("showinfo", "Bienvenue dans l'interface de Abir MOUSSAIF")
 mode_sombre = Checkbutton(racine, text="Sombre/Light mode",variable=var ,onvalue=1,offvalue=0,   command=dark_mode)
 mode_sombre.grid(row=11, column=0, columnspan=6, padx=10, pady=10, sticky='NESW')
-scale = Scale(racine, from_=0, to=100, orient=HORIZONTAL)
-scale.grid(row=12, column=0, columnspan=6, padx=10, pady=10,  sticky='NESW')
-top = Toplevel()
-top.geometry("180x100")
-top.title("toplevel")
-l2 = Label(top, text = "Toplevel widget")
-l2.pack()
+post_scale = Label(racine, text='A quel point aimez-vous cette interface?', font='bold')
+post_scale.grid(row=12, column=0, columnspan=6, padx=10, pady=5,  sticky='NESW')
+scale = Scale(racine, from_=0, to=10, orient=HORIZONTAL)
+scale.grid(row=13, column=0, columnspan=6, padx=10, pady=10,  sticky='NESW')
+# top = Toplevel()
+# top.geometry("180x100")
+# top.title("toplevel")
+# l2 = Label(top, text = "Toplevel widget")
+# l2.pack()
 racine.mainloop()

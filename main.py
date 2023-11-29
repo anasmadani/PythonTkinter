@@ -4,6 +4,8 @@ from tkinter import *
 import numpy as np
 from tkinter import filedialog
 from tkinter import messagebox
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 """
  Équations de la cinématique (accélération constante)
@@ -28,6 +30,19 @@ for i in range(12):  # on nbr colonnes = 6 , et nbr lignes = 12
         Grid.rowconfigure(racine, i, weight=1)
 
 
+def action_nouveau():
+    print("Nouveau")
+
+def action_ouvrir():
+    print("Ouvrir")
+
+def action_enregistrer():
+    print("Enregistrer")
+
+def action_quitter():
+    print("Quitter")
+    racine.quit()
+
 def dark_mode():
     if var.get() == 1:
         # Dark mode
@@ -40,6 +55,8 @@ def dark_mode():
         vf_label.config(bg='black', fg='white')
         a_label.config(bg='black', fg='white')
         t_label.config(bg='black', fg='white')
+        resultats.config(bg='black', fg='white')
+        
         post_scale.config(bg='black', fg='white')
         # graph_canvas.config(bg='black', highlightbackground='white', highlightcolor='white', highlightthickness=1)
 
@@ -75,15 +92,16 @@ def dark_mode():
         vf_label.config(bg='lightgray', fg='black')
         a_label.config(bg='lightgray', fg='black')
         t_label.config(bg='lightgray', fg='black')
+        resultats.config(bg='lightgray', fg='black')
         post_scale.config(bg='lightgray', fg='black')
 
         # graph_canvas.config(bg='lightgray', highlightbackground='black', highlightcolor='white', highlightthickness=1)
 
-        vi.config(bg='lightgray', fg='black')
-        vf.config(bg='lightgray', fg='black')
-        t.config(bg='lightgray', fg='black')
-        a.config(bg='lightgray', fg='black')
-        d.config(bg='lightgray', fg='black')
+        vi.config(bg='white', fg='black')
+        vf.config(bg='white', fg='black')
+        t.config(bg='white', fg='black')
+        a.config(bg='white', fg='black')
+        d.config(bg='white', fg='black')
 
         d_bouton.config(bg='lightgray', fg='black')
         a_bouton.config(bg='lightgray', fg='black')
@@ -110,32 +128,39 @@ def effacer_valeurs():  # fonction pour vider les champs deja remplis
 
 
 
-#fonction pour dessiner un graphique
+
 def plot_trajectory():
     global graph_canvas
-
     var_connues = obtenir_var_connues()
     if 't' in var_connues and 'vi' in var_connues and 'a' in var_connues:
         t_values = np.linspace(0, var_connues['t'], 100)
         vi = var_connues['vi']
         a = var_connues['a']
         d_values = vi * t_values + 0.5 * a * t_values**2
-
         #Creation de la fenetre Toplevel
         top_window = Toplevel(racine)
         top_window.title("Trajectoire")
 
-        #Creation de canvas pour le graphique dans la fenetre Toplevel
-
         graph_canvas = Canvas(top_window, width=400, height=300)
         graph_canvas.pack()
-        # Dessiner la trajectoire sur le graphique
-        for i in range(len(t_values) - 1):
-            x1, y1 = (t_values[i] / var_connues['t']) * 400, 300 - (d_values[i] / max(d_values)) * 300
-            x2, y2 = (t_values[i + 1] / var_connues['t']) * 400, 300 - (d_values[i + 1] / max(d_values)) * 300
-            graph_canvas.create_line(x1, y1, x2, y2, fill='blue')
+        # Création de la figure et des axes
+        fig, ax = plt.subplots()
+        
+        # Tracer la trajectoire
+        ax.plot(t_values, d_values, color='blue')
+        ax.set_title('Trajectoire')
+        ax.set_xlabel('Temps (s)')
+        ax.set_ylabel('Trajectoire (m)')
 
-        graph_canvas.create_text(200, 280, text='Trajectoire vs Temps', font='bold')
+        # Ajouter une grille
+        ax.grid(True)
+
+        # Convertir le tracé en image Tkinter
+        graph_canvas = FigureCanvasTkAgg(fig, master=graph_canvas)
+        graph_canvas.draw()
+
+        # Placer le graphique dans le Canvas Tkinter
+        graph_canvas.get_tk_widget().pack()
 
 
 def obtenir_var_connues():
@@ -509,15 +534,28 @@ plot_button.grid(row=10, column=0, columnspan=6, padx=10, pady=10, sticky='NESW'
 export_button = Button(racine, text='Exporter vers TXT (il faut donner au moins 3 variables connues)', command=export_to_txt, font='bold')
 export_button.grid(row=9, column=0, columnspan=6, padx=10, pady=10, sticky='NESW')
 messagebox.showinfo("showinfo", "Bienvenue dans l'interface de Abir MOUSSAIF")
+racine.update_idletasks()
 mode_sombre = Checkbutton(racine, text="Sombre/Light mode",variable=var ,onvalue=1,offvalue=0,   command=dark_mode)
 mode_sombre.grid(row=11, column=0, columnspan=6, padx=10, pady=10, sticky='NESW')
 post_scale = Label(racine, text='A quel point aimez-vous cette interface?', font='bold')
 post_scale.grid(row=12, column=0, columnspan=6, padx=10, pady=5,  sticky='NESW')
 scale = Scale(racine, from_=0, to=10, orient=HORIZONTAL)
+
+
+
+barre_menu = Menu(racine)
 scale.grid(row=13, column=0, columnspan=6, padx=10, pady=10,  sticky='NESW')
-# top = Toplevel()
-# top.geometry("180x100")
-# top.title("toplevel")
-# l2 = Label(top, text = "Toplevel widget")
-# l2.pack()
+menu_fichier = Menu(barre_menu, tearoff=0)
+menu_fichier.add_command(label="Nouveau", command=action_nouveau)
+menu_fichier.add_command(label="Ouvrir", command=action_ouvrir)
+menu_fichier.add_command(label="Enregistrer", command=action_enregistrer)
+menu_fichier.add_separator()
+menu_fichier.add_command(label="Quitter", command=action_quitter)
+
+# Ajout du menu Fichier à la barre de menu principale
+barre_menu.add_cascade(label="Fichier", menu=menu_fichier)
+
+# Afficher la barre de menu
+racine.config(menu=barre_menu)
+
 racine.mainloop()
